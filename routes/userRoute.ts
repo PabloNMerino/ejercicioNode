@@ -1,86 +1,80 @@
 import express, { Request, Response } from "express";
-import { User } from '../models/userModel';
 import { users } from '../repository/userRepository';
-import { format } from 'date-fns';
+import {registerUser, getAllUsers, getUserById, getUserLastActivityById, updateUser, deleteUserById } from '../service/userService'
 
 const usersRouter = express.Router();
 
 usersRouter.get("/", (req: Request, res: Response) => {
-    res.send("Bienvenido al panel de administracion de los usuarios!!!");
+    res.send("Welcome to the users dashboard!!!");
 });
-
-let currentId: number = 1;
 
 //Registrar usuario
 usersRouter.post('', (req: Request, res: Response) => {
 
-    users.push(new User(currentId++, req.body.name, req.body.email, format(new Date(), 'dd/MM/yyyy HH:mm:ss')));
-    res.status(201).send(`User "${req.body.name}" succesfully registered!`)
+    const { name, email } = req.body;
+    try{
+        registerUser(name, email);
+        res.status(201).send(`User "${req.body.name}" succesfully registered!`)
+    } catch{
+        res.status(400).send('User already exists')
+    }
 })
 
 //Devolver lista de usuarios
 usersRouter.get('/all', (req: Request, res: Response) => {
-    if(users.length === 0) {
+    try{
+        const allUsers = getAllUsers();
+        res.status(200).json(users)
+    }catch{
         res.status(404).send('No users registered')
     }
-  res.status(200).json(users)
 })
 
 //Buscar usuario por ID
 usersRouter.get("/:id", (req: Request, res: Response) => {
-    const userFound = users.find(user => user.id === parseInt(req.params.id));
-    if(!userFound) {
-        return res.status(404).send(('User not found'))
+    const { id } = req.params
+    try {
+        const user = getUserById(parseInt(id));
+        res.json(user);
+    } catch {
+        res.status(404).send(`No user found with ID ${id}`)
     }
-    res.json(userFound);
+});
 
+//Ver ultima fecha de actividad
+usersRouter.get("/last-activity/:id", (req: Request, res: Response) => {
+    const { id } = req.params
+    try {
+        const userActivity = getUserLastActivityById(parseInt(id));
+        res.json(userActivity);
+    } catch {
+        res.status(404).send(`No user found with ID ${id}`)
+    }
 });
 
 //Actualizar usuario por ID
 usersRouter.put("/:id", (req: Request, res: Response) => {
-    const userIndex = users.findIndex(user => user.id === parseInt(req.params.id))
-    if (userIndex === -1) {
-        return res.status(404).send(('User not found'))
+    const { id } = req.params
+    const { name, email } = req.body
+
+    try {
+        const responseString = updateUser(parseInt(id), name, email)
+        res.status(200).send(responseString);
+    } catch {
+        res.status(404).send(`No user found with ID ${id}`)
     }
-
-    let responseString;
-
-    if(users[userIndex].name !== req.body.name && users[userIndex].email !== req.body.email) {
-        responseString = `User ID ${users[userIndex].id} (${users[userIndex].name}) succesfully updated name to "${req.body.name}" and email to "${req.body.email}"`    
-    } else if (users[userIndex].name !== req.body.name && users[userIndex].email === req.body.email) {
-        responseString = `User ID ${users[userIndex].id} (${users[userIndex].name}) succesfully updated name to "${req.body.name}"` 
-    } else if (users[userIndex].name === req.body.name && users[userIndex].email !== req.body.email) {
-        responseString = `User ID ${users[userIndex].id} (${users[userIndex].name}) succesfully updated email to "${req.body.email}"` 
-    } else {
-        responseString = `User had no update`
-    }
-
-
-    users[userIndex] = {
-        id: parseInt(req.params.id),
-        name: req.body.name,
-        email: req.body.email,
-        lastActivity: format(new Date(), 'dd/MM/yyyy HH:mm:ss')
-    }
-
-    res.status(200).send(responseString);
 });
 
 //Borrar usuario por ID
 usersRouter.delete("/:id", (req: Request, res: Response) => {
-    const idRequired = parseInt(req.params.id)
+    const { id } = req.params
 
-    let userIndex = users.findIndex(user => user.id === idRequired)
-    console.log(users[userIndex].name);
-        
-    if (userIndex === -1) {
-        return res.status(404).send(('User not found'))
+    try{
+        const responseString = deleteUserById(parseInt(id));
+        res.status(200).send(responseString);
+    } catch {
+        res.status(404).send((`No user found with ID ${id}`))
     }
-
-    let responseString: string = `User ID ${idRequired} named ${users[userIndex].name} succesfully deleted`;
-
-    users.splice(userIndex, 1);
-    res.send(responseString);
 });
 
 export default usersRouter;
