@@ -19,4 +19,5 @@ productRouter.delete('/:id', productController.deleteProduct);
 //Actualizar producto por Id
 productRouter.put('/:id', productController.updateProduct);
 
+
 export default productRouter;

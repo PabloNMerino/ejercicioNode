@@ -1,6 +1,7 @@
 
 import express from "express";
-import productsRouter from './routes/productRoute'
+import productsRouter from './routes/productRoute';
+import checkoutRouter from './routes/checkoutRoute';
 import { config } from "dotenv";
 import dbConnection from "./db/dbConnection";
 
@@ -14,6 +15,7 @@ const app = express();
 
 app.use(express.json());
 app.use('/product', productsRouter);
+app.use('/checkout', checkoutRouter);
 
 dbConnection();
 
