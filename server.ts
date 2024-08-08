@@ -1,17 +1,22 @@
 
-import express, { Request, Response } from "express";
-import usersRouter from './routes/userRoute'
-import adminRouter from './routes/adminRoute'
+import express from "express";
+import productsRouter from './routes/productRoute'
+import { config } from "dotenv";
+import dbConnection from "./db/dbConnection";
 
-const PORT = 3000;
-const HOST = 'localhost';
+config();
+
+const PORT = Number(process.env.PORT) ?? 3000;
+const HOST = process.env.HOST!;
 
 
 const app = express();
 
 app.use(express.json());
-app.use('/user', usersRouter);
-app.use('/admin', adminRouter);
+app.use('/product', productsRouter);
+
+dbConnection();
+
 
 app.listen(PORT, HOST, () => {
     console.log(`Server is running on http://${HOST}:${PORT}`);
