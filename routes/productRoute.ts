@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import { productController } from "../controllers/productController";
+import { isAdmin } from "../middlewares";
 
 const productRouter = express.Router();
 
@@ -14,7 +15,7 @@ productRouter.post('', productController.createProduct)
 productRouter.get('/:id', productController.getProductById);
 
 //Borrar producto
-productRouter.delete('/:id', productController.deleteProduct);
+productRouter.delete('/:id', isAdmin, productController.deleteProduct);
 
 //Actualizar producto por Id
 productRouter.put('/:id', productController.updateProduct);

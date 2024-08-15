@@ -1,9 +1,8 @@
 
 import express from "express";
-import productsRouter from './routes/productRoute';
-import checkoutRouter from './routes/checkoutRoute';
 import { config } from "dotenv";
 import dbConnection from "./db/dbConnection";
+import { authRouter, userRouter, productRouter } from "./routes";
 
 config();
 
@@ -14,8 +13,9 @@ const HOST = process.env.HOST!;
 const app = express();
 
 app.use(express.json());
-app.use('/product', productsRouter);
-app.use('/checkout', checkoutRouter);
+app.use('/product', productRouter);
+app.use("/user", userRouter);
+app.use('/auth', authRouter);
 
 dbConnection();
 
