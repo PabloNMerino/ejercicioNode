@@ -2,8 +2,9 @@
 import express from "express";
 import { config } from "dotenv";
 import dbConnection from "./db/dbConnection";
-import { authRouter, userRouter, productRouter } from "./routes";
-
+import authRouter from "./authentication/route/authRoute";
+import userRouter from "./users/route/userRoute";
+import productRouter from "./products/route/productRoute";
 config();
 
 const PORT = Number(process.env.PORT) ?? 3000;

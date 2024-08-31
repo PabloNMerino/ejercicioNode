@@ -1,20 +1,38 @@
 import { Request, Response } from "express";
 import User from "../model/userModel";
+import jwt from "jsonwebtoken";
+import { UserDTO } from "../model/dto/requestUserInformationDto";
 
 class UserController {
 
-    async getUsers(req: Request, res: Response) {
+    async getEnabledUsers(req: Request, res: Response) {
         try {
-            const users = await User.find({is_enabled: true});
+            const users = await User.find({role: 'customer', is_enabled: true});
             return res.status(200).json(users);
         } catch (error) {
             console.log(error);
         }
     }
 
-    async deleteUser(req: Request, res: Response) {
+    async getDisabledUsers(req: Request, res: Response) {
         try {
-            const user = await User.findById(req.params.id);
+            const users = await User.find({role: 'customer', is_enabled: false});
+            return res.status(200).json(users);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async softDeleteUser(req: Request, res: Response) {
+        const token = req.headers;
+
+        try {
+            const userDecoded: any = jwt.verify(
+                token["token"] as string,
+                process.env.JWT_SECRET!
+                );
+
+            const user = await User.findById(userDecoded.userId);
             if(user!=null) {
                 user.is_enabled = false;
                 await user.save()
@@ -26,8 +44,15 @@ class UserController {
     }
 
     async updateUser(req: Request, res: Response) {
+        const token = req.headers;
+  
         try {
-            const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+            const userDecoded: any = jwt.verify(
+                token["token"] as string,
+                process.env.JWT_SECRET!
+                );
+
+            const user = await User.findByIdAndUpdate(userDecoded.userId, req.body, {
             new: true,
             });
             return res.status(200).json(user);
@@ -36,7 +61,40 @@ class UserController {
         }
     }
 
-    async getUser(req: Request, res: Response) {}
-}
+    async getUserInformation(req: Request, res: Response) {
+        const token = req.headers;
+  
+        try {
+            const userDecoded: any = jwt.verify(
+                token["token"] as string,
+                process.env.JWT_SECRET!
+                );
 
+            const user = await User.findById(userDecoded.userId);
+
+            if(user!=undefined) {
+                const userDtoResponse: UserDTO = {
+                    first_name: user.first_name,
+                    last_name: user.last_name,
+                    email: user.email,
+                    address: user.address,
+                    phone: user.phone,
+                    role: user.role,
+                    created_at: user.created_at,
+                    updated_at: user.updated_at
+                 }
+
+                 return res.status(200).json(userDtoResponse);
+
+            } else {
+                return res.status(500);
+            }        
+        }
+         catch(error) {
+            return res.status(500);
+        }
+  
+        }  
+    
+}
 export const userController = new UserController();

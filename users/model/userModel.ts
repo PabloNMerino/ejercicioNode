@@ -40,8 +40,7 @@ const userSchema = new Schema({
     role: {
         type: String,
         enum: Object.values(UserRole),
-        default: UserRole.Customer,
-        required: true,
+        default: UserRole.Customer
     },
     is_enabled: {
         type: Boolean,

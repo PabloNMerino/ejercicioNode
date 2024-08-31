@@ -15,6 +15,7 @@ class AuthController {
             const user = await User.create(req.body);
             return res.status(201).json(user);
         } catch (error) {
+            console.error(error)
             return res.status(400).json({ error: "Registration failed" });
         }
     }
@@ -23,8 +24,9 @@ class AuthController {
         try {
             const { email, password } = req.body;
             const existingUser = await User.findOne({ email });
-            if (!existingUser) {
-                return res.status(400).json({ error: "User not found" });
+
+            if (!existingUser || existingUser.is_enabled==false) {
+                return res.status(404).json({ error: "User not found" });
             }
             const isPasswordValid = await compare(password, existingUser.password!);
             if (!isPasswordValid) {
