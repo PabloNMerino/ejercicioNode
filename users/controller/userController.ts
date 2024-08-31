@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import User from "../models/userModel";
+import User from "../model/userModel";
 
 class UserController {
 

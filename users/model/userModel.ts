@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose"
+import { UserRole } from "./userRoleEnum"
 import bcrypt from "bcrypt";
 
 const userSchema = new Schema({
@@ -9,11 +10,6 @@ const userSchema = new Schema({
     last_name: {
         type: String,
         required: true,
-        },
-    username: {
-        type: String,
-        required: true,
-        unique: true,
         },
     email: {
         type: String,
@@ -28,16 +24,34 @@ const userSchema = new Schema({
         type: String,
         required: true,
         },
-    is_admin: {
-        type: Boolean,
-        default: false,
+    address: {
+        type: String,
+        required: true,
         },
-    is_enabled: {
-        type: Boolean,
-        default: true,
-        set: function (value: boolean): boolean {
-            return value;
-        }
+    phone: {
+        type: String,
+        required: true,
+        match: [
+            /^\+?[1-9]\d{1,14}$/,
+            "Please fill a valid phone number",
+         ],
+        unique: true,
+    },
+    role: {
+        type: String,
+        enum: Object.values(UserRole),
+        default: UserRole.Customer,
+        required: true,
+    },
+    created_at: {
+        type: Date,
+        default: Date.now,
+        required: true,
+    },
+    updated_at: {
+        type: Date,
+        default: Date.now,
+        required: true,
     }
 })
 
@@ -51,6 +65,6 @@ userSchema.pre("save", async function (next) {
     }
 });
 
-    const User = model("User", userSchema);
+    const User = model("Users", userSchema);
 
     export default User;
