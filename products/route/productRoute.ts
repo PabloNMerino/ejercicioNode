@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import { productController } from "../controller/productController";
-import { isAdmin } from "../../middlewares";
+import { isAdmin, isAuthenticated } from "../../middlewares";
 
 const productRouter = express.Router();
 
@@ -9,7 +9,7 @@ productRouter.get('/all', productController.getProducts);
 
 
 //Crear producto
-productRouter.post('', productController.createProduct)
+productRouter.post('', isAuthenticated, productController.createProduct)
 
 //Devolver producto por Id
 productRouter.get('/:id', productController.getProductById);

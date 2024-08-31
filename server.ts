@@ -5,6 +5,7 @@ import dbConnection from "./db/dbConnection";
 import authRouter from "./authentication/route/authRoute";
 import userRouter from "./users/route/userRoute";
 import productRouter from "./products/route/productRoute";
+import categoryRouter from "./categories/route/categoryRoute";
 config();
 
 const PORT = Number(process.env.PORT) ?? 3000;
@@ -14,8 +15,9 @@ const HOST = process.env.HOST!;
 const app = express();
 
 app.use(express.json());
-app.use('/product', productRouter);
 app.use("/user", userRouter);
+app.use("/category", categoryRouter);
+app.use('/product', productRouter);
 app.use('/auth', authRouter);
 
 dbConnection();

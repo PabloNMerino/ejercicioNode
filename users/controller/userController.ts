@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import User from "../model/userModel";
 import jwt from "jsonwebtoken";
-import { UserDTO } from "../model/dto/requestUserInformationDto";
 
 class UserController {
 

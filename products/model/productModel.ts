@@ -26,6 +26,10 @@ const productSchema = new Schema({
         type: String,
         required: true,
     },
+    is_paused: {
+        type: Boolean,
+        default: false,          
+    },
     created_at: {
         type: Date,
         default: Date.now,
