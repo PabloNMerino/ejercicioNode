@@ -4,21 +4,15 @@ import { isAdmin, isAuthenticated } from "../../middlewares";
 
 const productRouter = express.Router();
 
-//Devolver lista de productos
+
 productRouter.get('/all', productController.getProducts);
-
-
-//Crear producto
-productRouter.post('', isAuthenticated, productController.createProduct)
-
-//Devolver producto por Id
+productRouter.post('', isAdmin, productController.createProduct);
 productRouter.get('/:id', productController.getProductById);
-
-//Borrar producto
 productRouter.delete('/:id', isAdmin, productController.deleteProduct);
+productRouter.put('/:id', isAdmin, productController.updateProduct);
 
-//Actualizar producto por Id
-productRouter.put('/:id', productController.updateProduct);
+//productRouter.patch('/:id', isAdmin, productController.updatePauseStateProduct);
+//productRouter.patch('/:id', isAuthenticated, productController.updateProductStock);
 
 
 export default productRouter;

@@ -1,19 +1,24 @@
 import { Request, Response } from "express";
+import mongoose from 'mongoose';
 import Product from "../model/productModel";
 
 class ProductController {
 
-    //Crear nuevo producto
+
     async createProduct(req: Request, res: Response) {
+      const { category } = req.body;
+
+      if (category && !mongoose.isValidObjectId(category)) {
+        return res.status(400).json({ message: 'Invalid category ObjectId' });
+      }
       try {
         const newProduct = Product.create(req.body);
-        return res.status(201).json(newProduct);
+        return res.status(201).send('Product succesfully created');
       } catch (error) {
         res.status(500).json({ message: 'Server error', error });
       }
     }
 
-    //Devolver producto por Id
     async getProductById(req: Request, res: Response) {
       const { id } = req.params;
     
@@ -28,20 +33,18 @@ class ProductController {
       }
     }
 
-    //Devolver lista de productos
     async getProducts(req: Request, res: Response) {
         try {
-          const products = await Product.find().exec();
+          const products = await Product.find({ is_paused: false }).exec();
           if(!products) {
             res.status(404).send('No products registered')
           }
           return res.status(200).json(products);
         } catch (error) {
-           // res.status(500).json({ message: 'Server error', error });
+            res.status(500).json({ message: 'Server error', error });
         }
     }
 
-    //Borrar producto por Id
     async deleteProduct(req: Request, res: Response) {
         const { id } = req.params;
         try {
@@ -55,7 +58,6 @@ class ProductController {
         }
     }
 
-    //Borrar producto por Id
     async updateProduct(req: Request, res: Response) {
         const { id } = req.params;
         const {name, description, price, amount_available} = req.body;
