@@ -7,7 +7,7 @@ class UserController {
 
     async getEnabledUsers(req: Request, res: Response) {
         try {
-            const users = await User.find({role: 'customer', is_enabled: true});
+            const users = await User.find({role: 'customer', is_enabled: true}, 'first_name last_name email address phone created_at updated_at');
             return res.status(200).json(users);
         } catch (error) {
             console.log(error);
@@ -16,7 +16,7 @@ class UserController {
 
     async getDisabledUsers(req: Request, res: Response) {
         try {
-            const users = await User.find({role: 'customer', is_enabled: false});
+            const users = await User.find({role: 'customer', is_enabled: false}, 'first_name last_name email address phone created_at updated_at');
             return res.status(200).json(users);
         } catch (error) {
             console.log(error);
@@ -70,22 +70,10 @@ class UserController {
                 process.env.JWT_SECRET!
                 );
 
-            const user = await User.findById(userDecoded.userId);
+            const user = await User.findById(userDecoded.userId, 'first_name last_name email address phone role created_at updated_at');
 
             if(user!=undefined) {
-                const userDtoResponse: UserDTO = {
-                    first_name: user.first_name,
-                    last_name: user.last_name,
-                    email: user.email,
-                    address: user.address,
-                    phone: user.phone,
-                    role: user.role,
-                    created_at: user.created_at,
-                    updated_at: user.updated_at
-                 }
-
-                 return res.status(200).json(userDtoResponse);
-
+                 return res.status(200).json(user);
             } else {
                 return res.status(500);
             }        
@@ -101,15 +89,43 @@ class UserController {
         const { role } = req.body;
 
         try {
+  
+            const user = await User.findById(id);
 
-            const user = await User.findByIdAndUpdate(
+            if (user?.role === 'admin') {
+                return res.status(403).json({ error: "Cannot modify role on admin user" });
+            }
+
+            const userToUpdate = await User.findByIdAndUpdate(
                 id,
                 { $set: { role } }, 
                 { new: true } 
               );
               
-              if(user!=undefined) {
-                return res.status(200).json(`${user.first_name} ${user.last_name} is ${req.body.role === 'admin' ? 'now admin' : 'no longer admin'} `);
+              if(userToUpdate!=undefined) {
+                return res.status(200).json(`${userToUpdate.first_name} ${userToUpdate.last_name} is ${req.body.role === 'admin' ? 'now admin' : 'no longer admin'} `);
+              }
+            }
+         catch (error) {
+            return res.status(400).json({ error: "User not found" });
+        }
+    }
+
+    async fullDeleteUser(req: Request, res: Response) {
+        const id = req.params.id;
+
+        try {
+
+            const user = await User.findById(id);
+
+            if (user?.role === 'admin') {
+                return res.status(403).json({ error: "Cannot delete an admin user" });
+            }
+
+            const deletedUser = await User.findByIdAndDelete(id);
+              
+              if(deletedUser!=undefined) {
+                return res.status(200).json(`${deletedUser.first_name} ${deletedUser.last_name} succesfully deleted`);
               }
             }
          catch (error) {

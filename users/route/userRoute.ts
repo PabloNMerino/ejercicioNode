@@ -10,5 +10,6 @@ usersRouter.put("/update", isAuthenticated, userController.updateUser);
 usersRouter.patch("/delete", isAuthenticated, userController.softDeleteUser);
 usersRouter.get("/information", isAuthenticated, userController.getUserInformation);
 usersRouter.patch("/set-admin/:id", isAdmin, userController.setNewAdmin);
+usersRouter.delete("/full-delete/:id", isAdmin, userController.fullDeleteUser);
 
 export default usersRouter;

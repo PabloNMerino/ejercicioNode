@@ -29,7 +29,6 @@ export function isAuthenticated(req: Request, res: Response, next: Function) {
 
     try {
         const decoded: any = jwt.verify(token as string, process.env.JWT_SECRET!);
-        console.log(decoded);
         next();     
     } catch (error) {
         return res.status(401).send("Unauthorized: Invalid token");
