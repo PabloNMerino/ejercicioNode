@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import User from "../users/model/userModel";
+import User from "../../users/model/userModel";
 import { compare } from "bcrypt";
 import { sign } from "jsonwebtoken";
 
@@ -35,7 +35,7 @@ class AuthController {
                 {
                 userId: existingUser._id,
                 email: existingUser.email,
-                isAdmin: existingUser.is_admin,
+                role: existingUser.role,
                 },
                 process.env.JWT_SECRET!,
                 { expiresIn: "1h" }

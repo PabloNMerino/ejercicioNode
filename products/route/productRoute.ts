@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
-import { productController } from "../controllers/productController";
-import { isAdmin } from "../middlewares";
+import { productController } from "../controller/productController";
+import { isAdmin } from "../../middlewares";
 
 const productRouter = express.Router();
 

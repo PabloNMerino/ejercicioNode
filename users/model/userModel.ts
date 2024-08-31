@@ -43,6 +43,10 @@ const userSchema = new Schema({
         default: UserRole.Customer,
         required: true,
     },
+    is_enabled: {
+        type: Boolean,
+        default: true,          
+    },
     created_at: {
         type: Date,
         default: Date.now,
