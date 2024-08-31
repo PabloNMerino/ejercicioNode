@@ -9,5 +9,6 @@ usersRouter.get("/all-disabled", isAdmin, userController.getDisabledUsers);
 usersRouter.put("/update", isAuthenticated, userController.updateUser);
 usersRouter.patch("/delete", isAuthenticated, userController.softDeleteUser);
 usersRouter.get("/information", isAuthenticated, userController.getUserInformation);
+usersRouter.patch("/set-admin/:id", isAdmin, userController.setNewAdmin);
 
 export default usersRouter;

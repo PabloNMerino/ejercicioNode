@@ -94,7 +94,28 @@ class UserController {
             return res.status(500);
         }
   
-        }  
+    }  
+
+    async setNewAdmin(req: Request, res: Response) {
+        const id = req.params.id;
+        const { role } = req.body;
+
+        try {
+
+            const user = await User.findByIdAndUpdate(
+                id,
+                { $set: { role } }, 
+                { new: true } 
+              );
+              
+              if(user!=undefined) {
+                return res.status(200).json(`${user.first_name} ${user.last_name} is ${req.body.role === 'admin' ? 'now admin' : 'no longer admin'} `);
+              }
+            }
+         catch (error) {
+            return res.status(400).json({ error: "User not found" });
+        }
+    }
     
 }
 export const userController = new UserController();
