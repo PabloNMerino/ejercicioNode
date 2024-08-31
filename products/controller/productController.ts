@@ -74,6 +74,26 @@ class ProductController {
         }
     }
 
+    async updateStateProduct(req: Request, res: Response) {
+      const id = req.params.id;
+      const { is_paused } = req.body;
+
+      try {
+          const productToUpdate = await Product.findByIdAndUpdate(
+              id,
+              { $set: { is_paused } }, 
+              { new: true } 
+            );
+            
+            if(productToUpdate!=undefined) {
+              return res.status(200).json(`${productToUpdate.name} is ${is_paused ? 'now paused' : 'no longer paused'} `);
+            }
+          }
+       catch (error) {
+          return res.status(400).json({ error: "Product not found" });
+      }
+  }
+
 }
 
 export const productController = new ProductController();

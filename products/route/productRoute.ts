@@ -10,9 +10,8 @@ productRouter.post('', isAdmin, productController.createProduct);
 productRouter.get('/:id', productController.getProductById);
 productRouter.delete('/:id', isAdmin, productController.deleteProduct);
 productRouter.put('/:id', isAdmin, productController.updateProduct);
+productRouter.patch('/:id', isAdmin, productController.updateStateProduct);
 
-//productRouter.patch('/:id', isAdmin, productController.updatePauseStateProduct);
-//productRouter.patch('/:id', isAuthenticated, productController.updateProductStock);
 
 
 export default productRouter;
