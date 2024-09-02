@@ -1,12 +1,13 @@
 import { Request, Response } from "express";
 import User from "../model/userModel";
+import Address from "../userAddress/model/addressModel"
 import jwt from "jsonwebtoken";
 
 class UserController {
 
     async getEnabledUsers(req: Request, res: Response) {
         try {
-            const users = await User.find({role: 'customer', is_enabled: true}, 'first_name last_name email address phone created_at updated_at');
+            const users = await User.find({role: 'customer', is_enabled: true}, 'first_name last_name email phone created_at updated_at');
             return res.status(200).json(users);
         } catch (error) {
             console.log(error);
@@ -15,7 +16,7 @@ class UserController {
 
     async getDisabledUsers(req: Request, res: Response) {
         try {
-            const users = await User.find({role: 'customer', is_enabled: false}, 'first_name last_name email address phone created_at updated_at');
+            const users = await User.find({role: 'customer', is_enabled: false}, 'first_name last_name email phone created_at updated_at');
             return res.status(200).json(users);
         } catch (error) {
             console.log(error);
@@ -69,7 +70,7 @@ class UserController {
                 process.env.JWT_SECRET!
                 );
 
-            const user = await User.findById(userDecoded.userId, 'first_name last_name email address phone role created_at updated_at');
+            const user = await User.findById(userDecoded.userId, 'first_name last_name email phone role created_at updated_at');
 
             if(user!=undefined) {
                  return res.status(200).json(user);
@@ -131,6 +132,6 @@ class UserController {
             return res.status(400).json({ error: "User not found" });
         }
     }
-    
+
 }
 export const userController = new UserController();

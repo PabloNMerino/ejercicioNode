@@ -94,6 +94,30 @@ class ProductController {
       }
   }
 
+  async getProductsByPage(req: Request, res: Response) {
+
+    try {
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = parseInt(req.query.limit as string) || 5; 
+
+        const skip = (page - 1) * limit;
+        const productsByPage = await Product.find({ is_paused: false }).skip(skip).limit(limit);
+
+        const count = await Product.countDocuments();
+
+        res.json({
+          page,
+          limit,
+          totalPages: Math.ceil(count / limit),
+          totalItems: count,
+          data: productsByPage
+        });
+        }
+     catch (error) {
+        return res.status(400).json({ error: "Product not found" });
+    }
+}
+
 }
 
 export const productController = new ProductController();

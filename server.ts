@@ -7,6 +7,7 @@ import userRouter from "./users/route/userRoute";
 import productRouter from "./products/route/productRoute";
 import categoryRouter from "./categories/route/categoryRoute";
 import cartRouter from "./shoppingCart/route/cartRoute";
+import addressRouter from "./users/userAddress/route/addressRoute"
 config();
 
 const PORT = Number(process.env.PORT) ?? 3000;
@@ -21,6 +22,7 @@ app.use('/auth', authRouter);
 app.use('/product', productRouter);
 app.use("/category", categoryRouter);
 app.use("/cart", cartRouter);
+app.use("/address", addressRouter);
 
 dbConnection();
 
