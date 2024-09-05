@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
-import jwt from "jsonwebtoken";
-import mongoose from 'mongoose';
 import Order from "../model/orderModel";
 import { OrderStatus } from "../model/orderStatus";
+import { PaymentStatus } from "../../payment/model/paymentStatusEnum";
+import { paymentController } from "../../payment/controller/paymentController";
+import { Types } from "mongoose";
+
 
 class OrderController {
 
@@ -11,15 +13,24 @@ class OrderController {
 
         try {
             const userId = req.userId;  
-            const { items, total_price } = req.body;
+            const { items, total_price, payment_method } = req.body;
 
             const newOrder = new Order({
                 user_id: userId,
                 items: items,
-                total_price
+                total_price,
+                status: payment_method === "credit_card"? OrderStatus.Paid : OrderStatus.Pending
             });
 
             const savedOrder = await newOrder.save();
+
+            const order_id= Types.ObjectId.createFromHexString(savedOrder.id);
+            const paymentStatus = payment_method === "credit_card" ? PaymentStatus.Completed : PaymentStatus.Pending
+
+            if(userId!=undefined) {
+                paymentController.newPayment(order_id, userId, total_price, payment_method, paymentStatus);
+            }
+                    
             res.status(201).send("New order saved");
         } catch (error) {
         res.status(500).json({ message: 'Server error', error });
@@ -43,6 +54,7 @@ class OrderController {
         const id = req.params.id;
         try {
             await Order.findByIdAndDelete(id).exec();
+            paymentController.cancelPayment(Types.ObjectId.createFromHexString(id))
 
             return res.status(200).send("Order canceled succesfully");
         } catch (error) {
@@ -60,6 +72,8 @@ class OrderController {
                 { $set: { status: OrderStatus.Paid } }, 
                 { new: true } 
               );
+
+              await paymentController.updatePaymentStatus(Types.ObjectId.createFromHexString(id))
 
             return res.status(200).send("Order paid succesfully");
         } catch (error) {

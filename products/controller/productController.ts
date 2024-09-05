@@ -60,7 +60,6 @@ class ProductController {
 
     async updateProduct(req: Request, res: Response) {
         const { id } = req.params;
-        const {name, description, price, amount_available} = req.body;
         try {
           const product = await Product.findByIdAndUpdate(id, req.body);
 

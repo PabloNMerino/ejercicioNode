@@ -1,18 +1,12 @@
 import { Request, Response } from "express";
 import Address from "../model/addressModel"
-import jwt from "jsonwebtoken";
 
 class AddressController {
 
     async addAddress(req: Request, res: Response) {
-        const token = req.headers;
         
         try {
-            const userDecoded: any = jwt.verify(
-                token["token"] as string,
-                process.env.JWT_SECRET!
-                );
-
+            const userId = req.userId;
             const newAddress = new Address({
                 street_name: req.body.street_name,
                 street_number: req.body.street_number,
@@ -20,7 +14,7 @@ class AddressController {
                 city: req.body.city,
                 state: req.body.state,
                 extra_details: req.body.extra_details,
-                user_id: userDecoded.userId
+                user_id: userId
             })
 
           const savedAddress = Address.create(newAddress);
@@ -31,15 +25,10 @@ class AddressController {
       }
 
       async getAllAddresses(req: Request, res: Response) {
-        const token = req.headers;
         
-        try {
-            const userDecoded: any = jwt.verify(
-                token["token"] as string,
-                process.env.JWT_SECRET!
-                );
-
-          const addresses = await Address.find({user_id: userDecoded.userId}, 'street_name street_number postal_code city state extra_details');
+        try {;
+          const userId = req.userId;
+          const addresses = await Address.find({user_id: userId}, 'street_name street_number postal_code city state extra_details');
           return res.status(201).json(addresses);
         } catch (error) {
           res.status(500).json({ message: 'Server error', error });
@@ -49,18 +38,12 @@ class AddressController {
 
     async deleteAddressById(req: Request, res: Response) {
         const id = req.params.id;
-        const token = req.headers;
 
         try {
-
-            const userDecoded: any = jwt.verify(
-                token["token"] as string,
-                process.env.JWT_SECRET!
-                );
-
+            const userId = req.userId;
             const addressToDelete = await Address.findById(id);
 
-            if(addressToDelete?.user_id != userDecoded.userId) {
+            if(addressToDelete?.user_id != userId) {
                 return res.status(404).send("Address not found");
             }
 
@@ -95,7 +78,7 @@ class AddressController {
 
     async updateAddressById(req: Request, res: Response) {
         const { id } = req.params;
-        //const {street_name, street_number, postal_code, city, state, extra_details} = req.body;
+        
         try {
           const addressToUpdate = await Address.findByIdAndUpdate(id, req.body);
 

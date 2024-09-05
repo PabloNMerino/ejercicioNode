@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import { productController } from "../controller/productController";
-import { isAdmin, isAuthenticated } from "../../middlewares";
+import { isAdmin } from "../../middlewares";
 
 const productRouter = express.Router();
 

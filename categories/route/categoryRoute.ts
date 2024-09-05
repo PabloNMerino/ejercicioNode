@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import { categoryController } from "../controller/categoryController";
 import { isAdmin } from "../../middlewares";
 

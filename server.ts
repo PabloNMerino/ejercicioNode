@@ -6,7 +6,6 @@ import authRouter from "./authentication/route/authRoute";
 import userRouter from "./users/route/userRoute";
 import productRouter from "./products/route/productRoute";
 import categoryRouter from "./categories/route/categoryRoute";
-import cartRouter from "./shoppingCart/route/cartRoute";
 import addressRouter from "./users/userAddress/route/addressRoute";
 import orderRouter from "./orders/route/orderRoute";
 config();
@@ -22,9 +21,9 @@ app.use("/user", userRouter);
 app.use('/auth', authRouter);
 app.use('/product', productRouter);
 app.use("/category", categoryRouter);
-app.use("/cart", cartRouter);
 app.use("/address", addressRouter);
 app.use("/order", orderRouter);
+
 
 dbConnection();
 

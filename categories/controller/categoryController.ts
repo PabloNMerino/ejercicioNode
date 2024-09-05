@@ -6,7 +6,7 @@ class CategoryController {
     //Crear nuevo producto
     async createCategory(req: Request, res: Response) {
       try {
-        const newCategory = Category.create(req.body);
+        Category.create(req.body);
         return res.status(201).send(`Category ${req.body.name} succesfully created`);
       } catch (error) {
         res.status(500).json({ message: 'Server error', error });

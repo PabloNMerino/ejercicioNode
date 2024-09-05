@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
 import User from "../model/userModel";
-import Address from "../userAddress/model/addressModel"
-import jwt from "jsonwebtoken";
 
 class UserController {
 
@@ -24,15 +22,10 @@ class UserController {
     }
 
     async softDeleteUser(req: Request, res: Response) {
-        const token = req.headers;
 
         try {
-            const userDecoded: any = jwt.verify(
-                token["token"] as string,
-                process.env.JWT_SECRET!
-                );
-
-            const user = await User.findById(userDecoded.userId);
+            const userId = req.userId;
+            const user = await User.findById(userId);
             if(user!=null) {
                 user.is_enabled = false;
                 await user.save()
@@ -44,15 +37,10 @@ class UserController {
     }
 
     async updateUser(req: Request, res: Response) {
-        const token = req.headers;
   
         try {
-            const userDecoded: any = jwt.verify(
-                token["token"] as string,
-                process.env.JWT_SECRET!
-                );
-
-            const user = await User.findByIdAndUpdate(userDecoded.userId, req.body, {
+            const userId = req.userId;
+            const user = await User.findByIdAndUpdate(userId, req.body, {
             new: true,
             });
             return res.status(200).json(user);
@@ -62,15 +50,10 @@ class UserController {
     }
 
     async getUserInformation(req: Request, res: Response) {
-        const token = req.headers;
   
         try {
-            const userDecoded: any = jwt.verify(
-                token["token"] as string,
-                process.env.JWT_SECRET!
-                );
-
-            const user = await User.findById(userDecoded.userId, 'first_name last_name email phone role created_at updated_at');
+            const userId = req.userId;
+            const user = await User.findById(userId, 'first_name last_name email phone role created_at updated_at');
 
             if(user!=undefined) {
                  return res.status(200).json(user);

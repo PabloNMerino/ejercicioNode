@@ -34,7 +34,6 @@ const orderSchema = new Schema({
     status: {
         type: String,
         enum: Object.values(OrderStatus),
-        default: OrderStatus.Pending,
     },
     created_at: {
         type: Date,
