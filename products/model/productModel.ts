@@ -34,11 +34,6 @@ const productSchema = new Schema({
         type: Date,
         default: Date.now,
         required: true,
-    },
-    updated_at: {
-        type: Date,
-        default: Date.now,
-        required: true,
     }
 })
 

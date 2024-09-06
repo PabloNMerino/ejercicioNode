@@ -8,11 +8,6 @@ const paymentSchema = new Schema({
         ref: "Order",
         required: true,
     },
-    user_id: {
-        type: Types.ObjectId,
-        ref: "User",
-        required: true,
-    },
     amount: {
         type: Number,
         required: true,
@@ -24,18 +19,11 @@ const paymentSchema = new Schema({
         required: true,
     },
     payment_date: {
-        type: Date,
-        default: Date.now,
-        required: true,
+        type: Date
     },
     status: {
         type: String,
         enum: Object.values(PaymentStatus),
-        required: true,
-    },
-    created_at: {
-        type: Date,
-        default: Date.now,
         required: true,
     }
 });

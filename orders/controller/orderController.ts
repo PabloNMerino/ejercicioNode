@@ -19,16 +19,16 @@ class OrderController {
                 user_id: userId,
                 items: items,
                 total_price,
-                status: payment_method === "credit_card"? OrderStatus.Paid : OrderStatus.Pending
+                status: payment_method === "credit card"? OrderStatus.Paid : OrderStatus.Pending
             });
 
             const savedOrder = await newOrder.save();
 
             const order_id= Types.ObjectId.createFromHexString(savedOrder.id);
-            const paymentStatus = payment_method === "credit_card" ? PaymentStatus.Completed : PaymentStatus.Pending
+            const paymentStatus = payment_method === "credit card" ? PaymentStatus.Completed : PaymentStatus.Pending
 
             if(userId!=undefined) {
-                paymentController.newPayment(order_id, userId, total_price, payment_method, paymentStatus);
+                  paymentController.newPayment(order_id, total_price, payment_method, paymentStatus);
             }
                     
             res.status(201).send("New order saved");
@@ -53,8 +53,8 @@ class OrderController {
     async cancelOrder(req: Request, res: Response) {
         const id = req.params.id;
         try {
-            await Order.findByIdAndDelete(id).exec();
-            paymentController.cancelPayment(Types.ObjectId.createFromHexString(id))
+            const order = await Order.findByIdAndDelete(id).exec();
+            paymentController.cancelPayment(Types.ObjectId.createFromHexString(order?.id))
 
             return res.status(200).send("Order canceled succesfully");
         } catch (error) {
@@ -67,13 +67,13 @@ class OrderController {
         const id = req.params.id;
         try {
 
-             await Order.findByIdAndUpdate(
+            const order = await Order.findByIdAndUpdate(
                 id,
                 { $set: { status: OrderStatus.Paid } }, 
                 { new: true } 
               );
-
-              await paymentController.updatePaymentStatus(Types.ObjectId.createFromHexString(id))
+              
+                await paymentController.updatePaymentStatus(Types.ObjectId.createFromHexString(order?.id))
 
             return res.status(200).send("Order paid succesfully");
         } catch (error) {
